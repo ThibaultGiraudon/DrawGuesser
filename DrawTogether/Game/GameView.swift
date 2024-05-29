@@ -57,6 +57,7 @@ struct GameView: View {
                         }
                         .frame(height: UIScreen.main.bounds.height * 0.5)
                         pastGuesses
+                            .padding(.horizontal)
                             .frame(height: UIScreen.main.bounds.height * 0.20)
                     }
                 }
@@ -70,9 +71,7 @@ struct GameView: View {
             }
             .ignoresSafeArea(.container)
         }
-        .padding(.top, 50)
         .background(matchManager.currentlyDrawing ? .blue : .green)
-        .ignoresSafeArea()
         .onReceive(countdownTimer) { _ in
             guard matchManager.isTimeKeeper else { return }
             matchManager.remainingTime -= 1
@@ -203,10 +202,8 @@ struct GameView: View {
                 }
             }
         }
-        .padding(.bottom, 10)
         .frame(maxWidth: .infinity)
-        .padding([.horizontal], 30)
-        .padding(.top)
+        .padding()
         .background(
             .secondary
         )

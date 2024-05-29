@@ -8,6 +8,7 @@
 import Foundation
 import GameKit
 import PencilKit
+import Combine
 
 class MatchManager: NSObject, ObservableObject {
     let savePath = URL.documentsDirectory.appending(path: "customList")
@@ -36,8 +37,8 @@ class MatchManager: NSObject, ObservableObject {
     }
     @Published var lastReceivedDrawing = PKDrawing()
   
-    var match: GKMatch?
-    var otherPlayer: GKPlayer?
+    var match: GKMatch? = nil
+    var otherPlayer: GKPlayer? = nil
     var localPlayer = GKLocalPlayer.local
     
     var playerUUIDKey = UUID().uuidString
@@ -45,6 +46,10 @@ class MatchManager: NSObject, ObservableObject {
     var rootViewController: UIViewController? {
         let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
         return windowScene?.windows.first?.rootViewController
+    }
+    
+    enum CondingKeys: String, CodingKey {
+        case initGame, waitingPage, inGame, isGameOver, isTimeKeeper, authenticationState, everydayObjectList, animalsList, customList, selectedList, currentlyDrawing, drawPrompt, pastGuesses, score, remainingTime, lastReceivedDrawing, match, otherPlayer, localPlayer, playerUUIDKey, rootViewController
     }
     
     func loadData() {
@@ -58,7 +63,7 @@ class MatchManager: NSObject, ObservableObject {
     
     func save() {
         do {
-            let data = try JSONEncoder().encode(customList)
+            let data = try JSONEncoder().encode(selectedList)
             try data.write(to: savePath, options: [.atomic, .completeFileProtection])
         } catch {
             print("Unable do save data")
@@ -145,6 +150,7 @@ class MatchManager: NSObject, ObservableObject {
     func gameOver() {
         isGameOver = true
         match?.disconnect()
+        // rematch see https://developer.apple.com/documentation/gamekit/gkmatch/1502042-rematch
     }
     
     func resetGame() {
